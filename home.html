@@ -1,3 +1,4 @@
+
 <!--
 
      3jsbot code stencil
@@ -63,7 +64,12 @@
 // 3jsbot uses init() to initialize threejs scene, user input, and robot kinematics
 // CS148: you should use my_init() instead
 init();
-
+y_joint = 2;
+z_joint = 0;
+x_joint = 0;
+y_link = 1;
+z_link = 0;
+x_link = 0;
 // 3jsbot uses animate() as the main animation loop maintained by threejs 
 // CS148: you should use my_animate() instead
 animate();
@@ -106,7 +112,7 @@ function my_init() {
     textbar.style.height = 20;
     textbar.style.backgroundColor = "black";
     textbar.style.color = "#00ff00";
-    textbar.innerHTML = "Welcome to 3jsbot. I want to see some text. Too much coffeeeee?";
+    textbar.innerHTML = "Welcome to 3jsbot. I want to see some text. Too much coffee?";
     textbar.style.top = 10 + 'px';
     textbar.style.left = 10 + 'px';
     document.body.appendChild(textbar);
@@ -176,21 +182,66 @@ function init_robot_joints() {
 //////////////////////////////////////////////////
 
 // CS148: my_animate is where your robot's controls and movement are updated over time
-function my_animate() {
 
+function my_animate() {
+   
     // CS148: INITIAL GETTING FAMILIAR CODE  (START HERE)
 
     // keyboard is threejs helper for reading keyboard state
-    if (keyboard.pressed("x")) 
-        textbar.innerHTML = "moving up";  // make the pieces move up
+    if (keyboard.pressed("x")){ 
+        textbar.innerHTML = "moving up";
+        y_joint = y_joint + .1;
+        y_link = y_link + .1;
+        
+    }  // make the pieces move up
+    if (keyboard.pressed("s")){ 
+        textbar.innerHTML = "moving down";
+        y_joint = y_joint - .1;
+        y_link = y_link - .1;
+        
+    }  // make the pieces move up
+    else if (keyboard.pressed("l")){ 
+        textbar.innerHTML = "moving right";
+        x_joint = x_joint + .1;
+        x_link = x_link + .1;
+        
+    }  // make the pieces move up
+    else if (keyboard.pressed("j")){ 
+        textbar.innerHTML = "moving left";
+        x_joint = x_joint - .1;
+        x_link = x_link - .1;
+        
+    }  // make the pieces move up
+    else if (keyboard.pressed("k")){ 
+        textbar.innerHTML = "moving forward";
+        z_joint = z_joint + .1;
+        z_link = z_link + .1;
+        
+    }  // make the pieces move up
+    else if (keyboard.pressed("o")){ 
+        textbar.innerHTML = "moving back";
+        z_joint = z_joint - .1;
+        z_link = z_link - .1;
+        
+    }  // make the pieces move up
+    else if (keyboard.pressed("i")){ 
+        textbar.innerHTML = "moving back";
+        z_joint = z_joint - .1;
+        z_link = z_link - .1;
+        
+    }  // make the pieces move up
     else if (keyboard.pressed("z")) 
         textbar.innerHTML = "zzzzzz";  // stop jittering the pieces
     else {
-        // make the pieces jitter, and say something interesting
+        textbar.innerHTML = "do the jitterbug!"
+        y_joint = y_joint + ((Math.random()*.01)-.005) ;
+        y_link = y_link + ((Math.random()*.01)-.005) ;
+//Math.random()*0.02;        // make the pieces jitter, and say something interesting
     }
 
-    // jsmat is how we will represent matrices with index notation
-    // such that matrix[row][column] is the indexing
+    // jsmat will be used to transform a 3D object to a specific location in the world
+    // we will represent matrices with index notation 
+    //   such that matrix[row][column] is the indexing
     var jsmat = [
                 [1, 0, 0, 0],
                 [0, 1, 0, 0],
@@ -200,20 +251,35 @@ function my_animate() {
 
     var spacing = 0.9;  // variables declared with "var" are local 
 
-    // dirty way to get number of keys in an object
-    jsmat[0][3] = -Object.keys(robot.joints).length*spacing/2;  
+    // jsmat[0][3] corresponds to the x-coordinate of the position for the 3D object
+    // Object.key(object) is a rough way to get number of keys in an object
+    jsmat[0][3] = (-Object.keys(robot.joints).length*spacing/2) + x_joint;  
+
+
+    // iterate over each joint of the robot independently
     for (x in robot.joints) {
-        jsmat[1][3] = 2+Math.random()*0.02;  // Math object has lots of helpful functions
-        jsmat[2][3] = Math.random()*0.02;
+
+        // jsmat[1][3] corresponds to the y-coordinate of the position for the 3D object
+        jsmat[1][3] = y_joint;  // Math object has lots of helpful functions
+
+        // jsmat[2][3] corresponds to the z-coordinate of the position for the 3D object
+        jsmat[2][3] = z_joint;
+
+
+        // convert 2D JavaScript array to the threejs format
         threemat = matrix_2Darray_to_threejs(jsmat); 
+
+        // transform 
         simpleApplyMatrix(robot.joints[x].geom,threemat);
+
         jsmat[0][3] += spacing;
     } 
 
-    jsmat[0][3] = -Object.keys(robot.joints).length*spacing/2;
+    // iterate over each link of the robot independently
+    jsmat[0][3] = (-Object.keys(robot.joints).length*spacing/2) + x_link;
     for (x in robot.links) {
-        jsmat[1][3] = 1+Math.random()*0.02;
-        jsmat[2][3] = Math.random()*0.02;
+        jsmat[1][3] = y_link;
+        jsmat[2][3] = z_link;
         threemat = matrix_2Darray_to_threejs(jsmat);
         simpleApplyMatrix(robot.links[x].geom,threemat);
         jsmat[0][3] += spacing;
@@ -240,7 +306,7 @@ function my_animate() {
 
     // UPDATE AUTONOMOUS CONTROLS 
 
-    // proportional-de   rivative control 
+    // proportional-derivative control 
     /*
     if (update_pd)
         robot_pd_control();
@@ -269,4 +335,3 @@ function my_animate() {
 </script>
 </body>
 </html>
-
