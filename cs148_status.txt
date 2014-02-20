@@ -1,0 +1,11 @@
+2: Adam Gosselin 
+ 
+ Assignment 1: CHECK 
+ github will translate 'Assignment 1' into 'Assignment-1'. Please use 'Assignment-X' for branching of Assignment X
+ branch lables are case sensitive
+ 
+ Assignment 2: UNCHECKED
+ error: incorrect output on crawler
+ warning: joint selection key commands not handling tree extents
+ 
+
